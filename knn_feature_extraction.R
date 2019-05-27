@@ -1,3 +1,4 @@
+
 # target ベクトルの 1〜k 番目までの近傍との距離を算出する
 # 2 番目以降の距離は target からの距離を d_k(k=1…) として d_1, d_1 + d2, d_1 + d_2 + d_3... と算出される
 # target: 距離を測定する時の中心となるベクトル
@@ -7,7 +8,7 @@
 knn_d <- function(target, df.data, col_class, k=1) {
   library(tidyverse)
 
-  # NSE
+  # for NSE
   col_class <- dplyr::enquo(col_class)
 
   # ユークリッド距離
@@ -25,10 +26,8 @@ knn_d <- function(target, df.data, col_class, k=1) {
       # nrow(df.data) 個の要素から成る
       v.d <- df.tmp %>%
         dplyr::select(-!!col_class) %>%
-        purrr::transpose() %>%
-        purrr::map_dbl(function(row) {
-          v <- as.numeric(row)
-          d(target, v)
+        apply(1, function(row) {
+          d(target, row)
         })
 
       df.tmp %>%
@@ -67,7 +66,7 @@ knn_d <- function(target, df.data, col_class, k=1) {
 add_knn_d_columns <- function(df.data, col_class, k=1) {
   library(tidyverse)
 
-  # NSE
+  # for NSE
   col_class <- dplyr::enquo(col_class)
 
   # df.data の各行ごとに 1~k 番目までの距離を算出
