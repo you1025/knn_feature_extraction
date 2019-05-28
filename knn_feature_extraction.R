@@ -1,4 +1,3 @@
-
 # target ベクトルの 1〜k 番目までの近傍との距離を算出する
 # 2 番目以降の距離は target からの距離を d_k(k=1…) として d_1, d_1 + d2, d_1 + d_2 + d_3... と算出される
 # target: 距離を測定する時の中心となるベクトル
@@ -41,9 +40,9 @@ knn_d <- function(target, df.data, col_class, k=1) {
     # 各クラスごとに項目を生成
     # - 距離を用いて降順に並び替えた k 件を取得し番号を振る(1~k)
     # - 距離の小さい順に累積和を取る
-    dplyr::group_by(class) %>%
+    dplyr::group_by(!!col_class) %>%
     dplyr::top_n(k, -d) %>%
-    dplyr::arrange(class, d) %>%
+    dplyr::arrange(!!col_class, d) %>%
     dplyr::mutate(
       order = dplyr::row_number(d),  # 同着でも並び順に応じて強制的に異なる番号を割り振る
       d = cumsum(d)
@@ -53,9 +52,8 @@ knn_d <- function(target, df.data, col_class, k=1) {
 
     # wide-form に変換
     # ex. class_a_1, class_a_2, ..., class_a_k, class_b_1, class_b_2, ..., class_b_k, ...
-    dplyr::select(class, order, d) %>%
-    dplyr::mutate(class = stringr::str_c("class", class, sep = "_")) %>%
-    tidyr::unite(col = "class_order", class, order) %>%
+    dplyr::select(!!col_class, order, d) %>%
+    tidyr::unite(col = "class_order", !!col_class, order) %>%
     tidyr::spread(key = class_order, value = d)
 }
 
@@ -74,7 +72,7 @@ add_knn_d_columns <- function(df.data, col_class, k=1) {
     dplyr::select(-!!col_class) %>%
     apply(1, function(target) { knn_d(target, df.data, !!col_class, k) }) %>%
     purrr::reduce(dplyr::bind_rows)
-  
+
   df.data %>%
     dplyr::bind_cols(df.distances)
 }
