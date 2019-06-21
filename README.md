@@ -25,3 +25,8 @@ df.data.knn_d %>%
   ggplot(aes(class_a_1, class_b_1)) +
     geom_point(aes(colour = class))
 ```
+
+## 実験
+
+[k-NN Feature Extraction を試す](https://stat-you1025.blogspot.com/2019/05/k-nn-feature-extraction.html)  
+[Iris で k-NN Feature Extraction](https://stat-you1025.blogspot.com/2019/06/iris-k-nn-feature-extraction.html)
